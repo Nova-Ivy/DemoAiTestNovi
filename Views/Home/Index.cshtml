@@ -27,7 +27,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: auto;
             background-color: #f4f4f9;
             margin: 0;
         }
@@ -46,11 +46,12 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 20px;
+            margin-top:20px;
         }
 
         textarea {
-            width: 300px;
-            height: 150px;
+            width: 500px;
+            height: 250px;
             margin: 0 10px;
             padding: 10px;
             border-radius: 5px;
@@ -85,187 +86,192 @@
 </head>
 
 <body>
+    <div class="row bg-black mt-3">
+        <div class="col-md-6 bg-light">
+            <h3 class=" text-center mt-2">Language Translator</h3>
 
-    <h1>Language Translator</h1>
+            <div class="translator-container">
 
-    <div class="translator-container">
+                <div class="col-md-12 language-selection text-center">
 
-        <div class="language-selection">
+                    <label class="language-label">
 
-            <label class="language-label">
+                        <input type="radio" name="language" value="sv" checked> Swedish
 
-                <input type="radio" name="language" value="sv" checked> Swedish
+                    </label>
 
-            </label>
+                    <label class="language-label">
 
-            <label class="language-label">
+                        <input type="radio" name="language" value="es"> Spain
+                    </label>
+                    <label class="language-label">
+                        <input type="radio" name="language" value="id"> Bahasa Indonesia
+                    </label>
 
-                <input type="radio" name="language" value="es"> Spain
+                </div>
 
-            </label>
-            <label class="language-label">
+                <div class="col-md-10 textarea-container">
+                    <textarea id="sourceText" placeholder="Enter text..."></textarea>
+                </div>
 
-                <input type="radio" name="language" value="id"> Bahasa Indonesia
+                <button id="translateButton">Translate</button>
 
-            </label>
+                <div class="col-md-10 textarea-container">
+                    <textarea id="targetText" placeholder="Translation..." readonly></textarea>
+                </div>
 
+            </div>
+
+            <script>
+
+                document.getElementById('translateButton').addEventListener('click', function () {
+
+                    var srcText1 = document.getElementById('sourceText').value;
+
+                    var language1 = document.querySelector('input[name="language"]:checked').value;
+
+                    var targetTextArea = document.getElementById('targetText');
+
+
+                    $.ajax({
+
+                        url: '/Home/Translate', // The URL to send the data to
+
+                        type: 'POST',
+
+                        data: { srcText: srcText1, language: language1 },
+
+                        success: function (response) {
+
+                            // Handle the response from the server
+
+                            document.getElementById('targetText').value = response.translatedText;
+
+                            // alert(srcText1);
+
+                        },
+
+                        error: function (xhr, status, error) {
+
+                            // Handle any errors
+
+                            alert('An error occurred: ' + error);
+
+                        }
+
+                    });
+
+                });
+
+            </script>
         </div>
+        <div class="col-md-6">
+            <h3 class="text-center text-warning m-2">Chat Bot Assistant</h3>
 
-        <div class="textarea-container">
+            <div class="translator-container">
 
-            <textarea id="sourceText" placeholder="Enter text..."></textarea>
+                <div class="textarea-container">
 
-            <textarea id="targetText" placeholder="Translation..." readonly></textarea>
+                    <textarea id="displayText" placeholder="Translation..." readonly style="width:550px; height:500px"></textarea>
 
+                </div>
+
+                <div class="textarea-container">
+
+                    <textarea id="chatText" placeholder="Enter text..." style="height:50px"></textarea> <button id="send">Send</button>
+
+                </div>
+
+               
+
+            </div>
+
+            <script>
+
+                document.getElementById('translateButton').addEventListener('click', function () {
+
+                    var srcText1 = document.getElementById('sourceText').value;
+
+                    var language1 = document.querySelector('input[name="language"]:checked').value;
+
+                    var targetTextArea = document.getElementById('targetText');
+
+
+                    $.ajax({
+
+                        url: '/Home/Translate', // The URL to send the data to
+
+                        type: 'POST',
+
+                        data: { srcText: srcText1, language: language1 },
+
+                        success: function (response) {
+
+                            // Handle the response from the server
+
+                            document.getElementById('targetText').value = response.translatedText;
+
+                            // alert(srcText1);
+
+                        },
+
+                        error: function (xhr, status, error) {
+
+                            // Handle any errors
+
+                            alert('An error occurred: ' + error);
+
+                        }
+
+                    });
+
+                });
+
+                document.getElementById('send').addEventListener('click', function () {
+
+                    var mychat = document.getElementById('chatText').value;
+
+                    document.getElementById('displayText').append("\n ME: " + mychat);
+
+                    document.getElementById('chatText').value = "";
+
+                    $.ajax({
+
+                        url: '/Home/Chat', // The URL to send the data to
+
+                        type: 'POST',
+
+                        data: { mychat: mychat },
+
+                        success: function (response) {
+
+                            // Handle the response from the server
+
+                            document.getElementById('displayText').append("\n AI Assistant: " + response.translatedText);
+
+                            // alert(srcText1);
+
+                        },
+
+                        error: function (xhr, status, error) {
+
+                            // Handle any errors
+
+                            alert('An error occurred: ' + error);
+
+                        }
+
+                    });
+
+                });
+
+            </script>
         </div>
-
-        <button id="translateButton">Translate</button>
 
     </div>
+    
 
-    <script>
-
-        document.getElementById('translateButton').addEventListener('click', function () {
-
-            var srcText1 = document.getElementById('sourceText').value;
-
-            var language1 = document.querySelector('input[name="language"]:checked').value;
-
-            var targetTextArea = document.getElementById('targetText');
-
-
-            $.ajax({
-
-                url: '/Home/Translate', // The URL to send the data to
-
-                type: 'POST',
-
-                data:{ srcText: srcText1, language: language1 },
-
-                success: function (response) {
-
-                    // Handle the response from the server
-
-                    document.getElementById('targetText').value = response.translatedText;
-
-                    // alert(srcText1);
-
-                },
-
-                error: function (xhr, status, error) {
-
-                    // Handle any errors
-
-                    alert('An error occurred: ' + error);
-
-                }
-
-            });
-
-        });
-
-    </script>
-
-    <h1>Chat With Me</h1>
-
-    <div class="translator-container">
-
-        <div class="textarea-container">
-
-            <textarea id="displayText" placeholder="Translation..." readonly style="height:500px"></textarea>
-
-        </div>
-
-        <div class="textarea-container">
-
-            <textarea id="chatText" placeholder="Enter text..." style="height:50px"></textarea>
-
-        </div>
-
-        <button id="send">Send</button>
-
-    </div>
-
-    <script>
-
-        document.getElementById('translateButton').addEventListener('click', function () {
-
-            var srcText1 = document.getElementById('sourceText').value;
-
-            var language1 = document.querySelector('input[name="language"]:checked').value;
-
-            var targetTextArea = document.getElementById('targetText');
-
-
-            $.ajax({
-
-                url: '/Home/Translate', // The URL to send the data to
-
-                type: 'POST',
-
-                data: { srcText: srcText1, language: language1 },
-
-                success: function (response) {
-
-                    // Handle the response from the server
-
-                    document.getElementById('targetText').value = response.translatedText;
-
-                    // alert(srcText1);
-
-                },
-
-                error: function (xhr, status, error) {
-
-                    // Handle any errors
-
-                    alert('An error occurred: ' + error);
-
-                }
-
-            });
-
-        });
-
-        document.getElementById('send').addEventListener('click', function () {
-
-            var mychat = document.getElementById('chatText').value;
-
-          document.getElementById('displayText').append("\n ME: " + mychat);
-
-            document.getElementById('chatText').value = "";
-
-            $.ajax({
-
-                url: '/Home/Chat', // The URL to send the data to
-
-                type: 'POST',
-
-                data: { mychat: mychat},
-
-                success: function (response) {
-
-                    // Handle the response from the server
-
-                    document.getElementById('displayText').append("\n AI Assistant: " + response.translatedText);
-
-                    // alert(srcText1);
-
-                },
-
-                error: function (xhr, status, error) {
-
-                    // Handle any errors
-
-                    alert('An error occurred: ' + error);
-
-                }
-
-            });
-
-        });
-
-    </script>
+    
 
 </body>
 
